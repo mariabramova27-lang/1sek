@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Тест · Какая профессия первичного сектора — твоя?</title>
+<style>
+  :root{
+    --bg-1:#071812; --bg-2:#0c2a1e;
+    --gold:#f5b942; --gold-2:#d97706; --gold-dark:#78350f; --gold-soft:#fef3c7;
+    --green:#4ade80; --green-light:#86efac; --green-dark:#166534;
+    --amber:#f59e0b; --sky:#38bdf8;
+    --card:#ffffff; --card-soft:#f8fafc;
+    --ink:#0f172a; --soft:#64748b; --line:#e2e8f0;
+    --ok:#10b981; --err:#ef4444;
+    --shadow-card:0 20px 50px rgba(0,0,0,.4);
+    --shadow-gold:0 10px 30px rgba(245,185,66,.4);
+    --shadow-green:0 10px 30px rgba(74,222,128,.35);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,'Nunito',sans-serif;
+    background:
+      radial-gradient(ellipse at top left, #0f3527 0%, transparent 50%),
+      radial-gradient(ellipse at bottom right, #071812 0%, transparent 50%),
+      linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+    background-attachment:fixed;
+    color:var(--ink); min-height:100vh; overflow-x:hidden;
+  }
+
+  #bgFX{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  #bgFX .bg-item{
+    position:absolute;bottom:-20vh;display:block;opacity:0;
+    will-change:transform,opacity;
+    animation-name:risePrimary;animation-timing-function:linear;
+    animation-iteration-count:infinite;
+    filter:drop-shadow(0 4px 12px rgba(0,0,0,.3));
+  }
+  @keyframes risePrimary{
+    0%{transform:translate3d(0,0,0) rotate(0deg);opacity:0}
+    8%{opacity:var(--op,.10)}
+    92%{opacity:var(--op,.10)}
+    100%{transform:translate3d(var(--dx,0),-140vh,0) rotate(var(--rot,15deg));opacity:0}
+  }
+  .glow{position:fixed;border-radius:50%;filter:blur(90px);pointer-events:none;z-index:0}
+  .glow.g1{width:420px;height:420px;background:rgba(74,222,128,.10);top:-100px;left:-100px}
+  .glow.g2{width:380px;height:380px;background:rgba(245,185,66,.10);top:40%;right:-120px}
+  .glow.g3{width:440px;height:440px;background:rgba(56,189,248,.08);bottom:-140px;left:20%}
+
+  #fx{position:fixed;inset:0;pointer-events:none;z-index:150;overflow:hidden}
+  .particle{position:absolute;font-size:20px;animation:fall 1.5s linear forwards}
+  @keyframes fall{to{transform:translateY(115vh) rotate(540deg);opacity:0}}
+
+  .wrap{max-width:820px;margin:0 auto;padding:22px 16px 80px;position:relative;z-index:2}
+
+  header.top{display:flex;align-items:center;justify-content:space-between;
+    gap:12px;flex-wrap:wrap;margin-bottom:18px}
+  .brand{display:flex;align-items:center;gap:12px;color:#fff}
+  .brand-logo{
+    width:44px;height:44px;border-radius:13px;flex-shrink:0;
+    background:linear-gradient(135deg,var(--green),#22c55e);
+    display:flex;align-items:center;justify-content:center;font-size:22px;
+    box-shadow:var(--shadow-green);position:relative;
+  }
+  .brand-logo::after{
+    content:"";position:absolute;inset:3px;border-radius:10px;
+    border:1.5px solid rgba(255,255,255,.4);
+  }
+  .brand-text{display:flex;flex-direction:column;line-height:1.1}
+  .brand-text b{font-size:15px;color:#fff;font-weight:900}
+  .brand-text span{font-size:11.5px;font-weight:700;color:var(--green-light);
+    letter-spacing:.5px;text-transform:uppercase}
+
+  .card{
+    background:var(--card);border-radius:24px;
+    box-shadow:var(--shadow-card);padding:30px;
+    position:relative;overflow:hidden;
+    animation:pop .4s ease;
+  }
+  .card::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:5px;
+    background:linear-gradient(90deg,var(--green),var(--gold),var(--sky));
+  }
+  @keyframes pop{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+  /* INTRO */
+  .intro-hero{text-align:center;padding:10px 0 20px}
+  .intro-hero .ih-emoji{
+    font-size:80px;display:inline-block;
+    animation:float 3s ease-in-out infinite;margin-bottom:10px;
+    filter:drop-shadow(0 10px 24px rgba(74,222,128,.35));
+  }
+  .intro-hero h1{
+    font-size:clamp(24px,4vw,32px);margin:8px 0 12px;
+    letter-spacing:-.6px;font-weight:900;line-height:1.2;color:var(--ink);
+  }
+  .intro-hero h1 span{
+    background:linear-gradient(135deg,var(--green-dark),var(--gold-2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .intro-hero p{
+    font-size:15px;line-height:1.7;color:var(--soft);
+    margin:0 auto;max-width:540px;font-weight:500;
+  }
+  .intro-hero p b{color:var(--ink);font-weight:800}
+
+  .intro-stats{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:12px;margin:24px 0;
+  }
+  .stat-card{
+    background:linear-gradient(135deg,#f8fafc,#eef2f7);
+    border:1px solid var(--line);border-radius:14px;
+    padding:16px 14px;text-align:center;
+  }
+  .stat-card .sc-emoji{font-size:28px;display:block;margin-bottom:6px}
+  .stat-card .sc-num{
+    font-size:22px;font-weight:900;color:var(--ink);line-height:1;
+  }
+  .stat-card .sc-label{
+    font-size:11px;font-weight:800;color:var(--soft);
+    letter-spacing:.5px;text-transform:uppercase;margin-top:6px;
+  }
+
+  .start-btn{
+    width:100%;padding:18px 26px;font-family:inherit;
+    font-weight:900;font-size:17px;
+    background:linear-gradient(135deg,var(--green),#22c55e);
+    color:#0a1628;border:none;border-radius:16px;cursor:pointer;
+    box-shadow:var(--shadow-green);transition:.2s;
+    display:flex;align-items:center;justify-content:center;gap:10px;
+  }
+  .start-btn:hover{filter:brightness(1.08);transform:translateY(-2px)}
+  .start-btn:active{transform:scale(.98)}
+
+  /* QUESTION */
+  .progress-row{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:14px;font-size:12.5px;font-weight:800;
+    color:var(--soft);letter-spacing:.3px;
+  }
+  .progress-row .pr-num{
+    background:var(--gold-soft);color:var(--gold-dark);
+    padding:4px 12px;border-radius:999px;
+    font-size:11.5px;font-weight:900;
+  }
+  .progress-bar{
+    height:10px;background:#e2e8f0;border-radius:5px;overflow:hidden;
+    margin-bottom:22px;
+  }
+  .progress-bar>div{
+    height:100%;width:0;
+    background:linear-gradient(90deg,var(--green),var(--gold));
+    border-radius:5px;transition:width .4s ease;
+  }
+
+  .question-emoji{
+    font-size:56px;display:block;margin-bottom:14px;
+    filter:drop-shadow(0 6px 16px rgba(74,222,128,.25));
+    animation:float 3s ease-in-out infinite;
+  }
+  .question-text{
+    font-size:clamp(20px,3vw,24px);font-weight:900;
+    color:var(--ink);line-height:1.3;margin:0 0 22px;
+    letter-spacing:-.3px;
+  }
+
+  .options{display:grid;gap:10px}
+  .option-btn{
+    display:flex;align-items:center;gap:14px;
+    padding:16px 18px;
+    background:linear-gradient(135deg,#f8fafc,#eef2f7);
+    border:2px solid var(--line);border-radius:14px;
+    cursor:pointer;font-family:inherit;font-size:15px;
+    font-weight:700;color:var(--ink);text-align:left;
+    transition:.2s;line-height:1.4;
+  }
+  .option-btn:hover{
+    border-color:var(--green);
+    background:linear-gradient(135deg,#ecfdf5,#d1fae5);
+    transform:translateX(4px);
+  }
+  .option-btn:active{transform:scale(.98)}
+  .option-btn .ob-letter{
+    flex-shrink:0;width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(135deg,var(--green-dark),var(--green));
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:900;font-size:15px;
+    box-shadow:0 4px 10px rgba(22,101,52,.3);
+  }
+  .option-btn .ob-text{flex:1}
+  .option-btn .ob-arrow{
+    color:var(--green-dark);font-weight:900;font-size:16px;
+    opacity:0;transition:.2s;
+  }
+  .option-btn:hover .ob-arrow{opacity:1;transform:translateX(2px)}
+
+  .back-row{margin-top:18px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .back-btn{
+    padding:10px 18px;font-family:inherit;font-weight:800;
+    font-size:13px;background:transparent;color:var(--soft);
+    border:1px solid var(--line);border-radius:10px;cursor:pointer;
+    transition:.2s;
+  }
+  .back-btn:hover:not(:disabled){background:#f1f5f9;color:var(--ink)}
+  .back-btn:disabled{opacity:.4;cursor:not-allowed}
+  .back-hint{font-size:12px;color:var(--soft);font-weight:600}
+
+  /* RESULT */
+  .result-hero{text-align:center;padding:8px 0 22px}
+  .result-hero .rh-medal{
+    font-size:80px;display:inline-block;
+    animation:float 3s ease-in-out infinite;margin-bottom:10px;
+    filter:drop-shadow(0 12px 30px rgba(245,185,66,.5));
+  }
+  .result-hero .rh-tag{
+    display:inline-block;padding:6px 16px;
+    background:var(--gold-soft);color:var(--gold-dark);
+    border-radius:999px;font-size:11.5px;font-weight:900;
+    letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;
+  }
+  .result-hero h2{
+    font-size:clamp(26px,4vw,34px);margin:6px 0 8px;
+    letter-spacing:-.6px;font-weight:900;line-height:1.15;
+    color:var(--ink);
+  }
+  .result-hero .rh-prof{
+    display:inline-block;
+    background:linear-gradient(135deg,var(--green-dark),var(--green));
+    color:#fff;padding:12px 26px;border-radius:14px;
+    font-size:20px;font-weight:900;margin:8px 0;
+    box-shadow:var(--shadow-green);
+  }
+  .result-hero .rh-why{
+    font-size:14.5px;line-height:1.65;color:var(--soft);
+    max-width:520px;margin:14px auto 0;font-weight:500;
+  }
+  .result-hero .rh-why b{color:var(--ink);font-weight:800}
+
+  .traits-row{
+    margin:18px 0;padding:16px;
+    background:linear-gradient(135deg,#ecfdf5,#d1fae5);
+    border-radius:14px;border-left:4px solid var(--green);
+  }
+  .traits-row .tr-title{
+    font-size:12px;font-weight:900;letter-spacing:.5px;
+    text-transform:uppercase;color:var(--green-dark);margin-bottom:10px;
+  }
+  .traits-chips{display:flex;flex-wrap:wrap;gap:6px}
+  .trait-chip{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:5px 11px;background:#fff;border:1px solid var(--green);
+    border-radius:999px;font-size:12.5px;font-weight:800;
+    color:var(--green-dark);
+  }
+
+  /* Топ-3 карточки */
+  .top-list{display:grid;gap:10px;margin:20px 0}
+  .top-item{
+    background:linear-gradient(135deg,#f8fafc,#eef2f7);
+    border:2px solid var(--line);border-radius:14px;
+    padding:14px 16px;display:flex;align-items:center;gap:14px;
+    transition:.2s;
+  }
+  .top-item:hover{border-color:var(--green);transform:translateX(2px)}
+  .top-item.first{
+    background:linear-gradient(135deg,#fef3c7,#fde68a);
+    border-color:var(--gold-2);
+  }
+  .top-item .ti-medal{
+    font-size:26px;flex-shrink:0;width:36px;text-align:center;
+  }
+  .top-item .ti-body{flex:1;min-width:0}
+  .top-item .ti-name{
+    font-size:15px;font-weight:900;color:var(--ink);line-height:1.3;
+    margin-bottom:3px;
+  }
+  .top-item .ti-cat{
+    font-size:11.5px;font-weight:700;color:var(--soft);
+  }
+  .top-item .ti-bar{
+    height:6px;background:#fff;border-radius:3px;margin-top:6px;
+    overflow:hidden;border:1px solid var(--line);
+  }
+  .top-item .ti-bar>div{
+    height:100%;background:linear-gradient(90deg,var(--green),var(--gold));
+    border-radius:3px;transition:width .6s ease;
+  }
+  .top-item .ti-percent{
+    font-size:14px;font-weight:900;color:var(--green-dark);
+    flex-shrink:0;
+  }
+  .top-item .ti-detail{
+    flex-shrink:0;padding:8px 14px;font-family:inherit;
+    font-weight:800;font-size:12px;
+    background:var(--green);color:#0a1628;
+    border:none;border-radius:10px;cursor:pointer;transition:.2s;
+    white-space:nowrap;
+  }
+  .top-item .ti-detail:hover{filter:brightness(1.08);transform:translateY(-1px)}
+
+  /* ===== ДИАГРАММА ===== */
+  .chart-section{
+    margin:26px 0 18px;padding:20px;
+    background:linear-gradient(135deg,#f8fafc,#eef2f7);
+    border:1px solid var(--line);border-radius:18px;
+  }
+  .chart-title{
+    font-size:13px;font-weight:900;letter-spacing:.5px;
+    text-transform:uppercase;color:var(--soft);
+    margin-bottom:14px;display:flex;align-items:center;gap:8px;
+  }
+  .chart-title::after{
+    content:"";flex:1;height:1px;background:var(--line);
+  }
+  .chart-rows{display:grid;gap:8px}
+  .chart-row{
+    display:grid;grid-template-columns:1fr auto;
+    gap:6px 10px;align-items:center;
+    padding:8px 10px;background:#fff;
+    border:1px solid var(--line);border-radius:10px;
+    transition:.15s;cursor:pointer;
+  }
+  .chart-row:hover{border-color:var(--green);
+    box-shadow:0 4px 12px rgba(74,222,128,.15)}
+  .chart-row.first{background:linear-gradient(135deg,#fef3c7,#fde68a);
+    border-color:var(--gold-2)}
+  .chart-row .cr-head{
+    display:flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:800;color:var(--ink);
+    min-width:0;
+  }
+  .chart-row .cr-emoji{font-size:18px;flex-shrink:0}
+  .chart-row .cr-name{
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .chart-row .cr-percent{
+    font-size:12.5px;font-weight:900;color:var(--green-dark);
+    grid-column:2;grid-row:1;
+  }
+  .chart-row .cr-bar-wrap{
+    grid-column:1/-1;
+    height:10px;background:#f1f5f9;border-radius:5px;
+    overflow:hidden;border:1px solid var(--line);
+  }
+  .chart-row .cr-bar{
+    height:100%;border-radius:5px;
+    transition:width .8s cubic-bezier(.2,.9,.3,1.2);
+    background:linear-gradient(90deg,var(--green),var(--gold));
+  }
+  .chart-row.cat-plant .cr-bar{background:linear-gradient(90deg,#4ade80,#16a34a)}
+  .chart-row.cat-livestock .cr-bar{background:linear-gradient(90deg,#f59e0b,#b45309)}
+  .chart-row.cat-forest .cr-bar{background:linear-gradient(90deg,#166534,#14532d)}
+  .chart-row.cat-fish .cr-bar{background:linear-gradient(90deg,#38bdf8,#0369a1)}
+  .chart-row.cat-mining .cr-bar{background:linear-gradient(90deg,#78716c,#292524)}
+
+  /* Кнопки */
+  .action-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}
+  .action-row button{
+    flex:1;min-width:140px;padding:14px 20px;
+    font-family:inherit;font-weight:800;font-size:14px;
+    border-radius:13px;border:none;cursor:pointer;transition:.2s;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--green),#22c55e);
+    color:#0a1628;box-shadow:var(--shadow-green);
+  }
+  .btn-primary:hover{filter:brightness(1.08);transform:translateY(-2px)}
+  .btn-secondary{
+    background:var(--card-soft);color:var(--ink);border:1px solid var(--line);
+  }
+  .btn-secondary:hover{background:#eef2f7}
+
+  /* ===== МОДАЛКА ===== */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(3,12,8,.85);
+    backdrop-filter:blur(8px);z-index:200;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;opacity:0;pointer-events:none;transition:.25s;
+  }
+  .modal-overlay.open{opacity:1;pointer-events:auto}
+  .modal{
+    background:#fff;border-radius:24px;max-width:680px;width:100%;
+    max-height:92vh;overflow-y:auto;
+    box-shadow:0 40px 100px rgba(0,0,0,.6);
+    transform:scale(.94);transition:.28s cubic-bezier(.2,.9,.3,1.2);
+  }
+  .modal-overlay.open .modal{transform:scale(1)}
+  .modal-head{
+    padding:26px 28px 20px;position:relative;color:#fff;
+    border-radius:24px 24px 0 0;overflow:hidden;
+  }
+  .modal-head::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,var(--gold),var(--green));z-index:2;
+  }
+  .mh-emoji{font-size:52px;line-height:1;margin-bottom:10px;
+    filter:drop-shadow(0 6px 16px rgba(0,0,0,.3))}
+  .modal-head h2{margin:0;font-size:21px;font-weight:900;line-height:1.25}
+  .modal-head .mh-cat{
+    display:inline-block;padding:3px 12px;border-radius:999px;
+    font-size:11px;font-weight:900;letter-spacing:.6px;
+    text-transform:uppercase;margin-top:8px;
+    background:rgba(255,255,255,.2);color:#fff;
+    backdrop-filter:blur(4px);
+  }
+  .modal-close{
+    position:absolute;top:16px;right:16px;width:36px;height:36px;
+    border-radius:50%;border:none;background:rgba(255,255,255,.18);
+    color:#fff;font-size:18px;font-weight:900;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:.2s;z-index:3;
+  }
+  .modal-close:hover{background:rgba(255,255,255,.32);transform:rotate(90deg)}
+
+  .modal-body{padding:22px 26px 26px}
+
+  .m-section{margin-bottom:22px}
+  .m-section:last-child{margin-bottom:0}
+  .m-section-title{
+    font-size:11.5px;font-weight:900;letter-spacing:1px;
+    text-transform:uppercase;margin:0 0 10px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .m-section-title::after{
+    content:"";flex:1;height:1px;
+    background:linear-gradient(90deg,currentColor,transparent);
+    opacity:.3;
+  }
+  .m-section-title.icon-about{color:var(--green-dark)}
+  .m-section-title.icon-track{color:var(--amber)}
+  .m-section-title.icon-feat{color:var(--sky)}
+  .m-section-title.icon-opp{color:var(--ok)}
+  .m-section-title.icon-risk{color:var(--err)}
+  .m-section-title.icon-fact{color:var(--gold-dark)}
+
+  .m-desc{
+    font-size:14px;line-height:1.65;color:var(--ink);font-weight:500;
+    background:linear-gradient(135deg,#f0fdf4,#ecfdf5);
+    padding:14px 16px;border-radius:12px;
+    border-left:4px solid var(--green);
+  }
+
+  .career-track{
+    display:flex;gap:0;flex-wrap:nowrap;overflow-x:auto;
+    padding:6px 0 12px;
+  }
+  .career-step{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    min-width:110px;flex:1;position:relative;
+    text-align:center;padding:0 4px;
+  }
+  .career-step:not(:last-child)::after{
+    content:"→";position:absolute;right:-8px;top:18px;
+    font-size:18px;color:var(--gold-2);font-weight:900;
+  }
+  .career-step .cs-num{
+    width:40px;height:40px;border-radius:50%;
+    background:linear-gradient(135deg,var(--gold),var(--gold-2));
+    color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:900;font-size:16px;
+    box-shadow:0 6px 14px rgba(245,185,66,.4);
+  }
+  .career-step:nth-child(2) .cs-num{background:linear-gradient(135deg,#4ade80,#16a34a)}
+  .career-step:nth-child(3) .cs-num{background:linear-gradient(135deg,#38bdf8,#0369a1)}
+  .career-step:nth-child(4) .cs-num{background:linear-gradient(135deg,#a78bfa,#7c3aed)}
+  .career-step:nth-child(5) .cs-num{background:linear-gradient(135deg,#f43f5e,#be123c)}
+  .career-step .cs-title{
+    font-size:11.5px;font-weight:900;color:var(--ink);line-height:1.3;
+  }
+  .career-step .cs-years{
+    font-size:10px;font-weight:700;color:var(--soft);
+    background:#f1f5f9;padding:2px 7px;border-radius:999px;
+  }
+
+  .salary-row{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+    margin-top:10px;
+  }
+  .salary-card{
+    background:linear-gradient(135deg,#f8fafc,#eef2f7);
+    border-radius:11px;padding:10px 8px;text-align:center;
+    border:1px solid var(--line);
+  }
+  .salary-card .sc-label{
+    font-size:10px;font-weight:900;letter-spacing:.4px;
+    text-transform:uppercase;color:var(--soft);margin-bottom:3px;
+  }
+  .salary-card .sc-value{
+    font-size:14px;font-weight:900;color:var(--gold-dark);line-height:1.2;
+  }
+  .salary-card .sc-sub{font-size:10px;color:var(--soft);font-weight:600;margin-top:2px}
+
+  .m-list{list-style:none;padding:0;margin:0;display:grid;gap:7px}
+  .m-list li{
+    padding:10px 13px;border-radius:11px;
+    font-size:13px;line-height:1.5;font-weight:500;
+    display:flex;gap:9px;align-items:flex-start;
+  }
+  .m-list li .ml-icon{
+    flex-shrink:0;font-size:15px;line-height:1.4;
+  }
+  .m-list li .ml-text{flex:1}
+  .m-list li .ml-text b{font-weight:900}
+  .m-list.feat li{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border-left:3px solid var(--sky)}
+  .m-list.feat li .ml-text b{color:#0369a1}
+  .m-list.opp li{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-left:3px solid var(--ok)}
+  .m-list.opp li .ml-text b{color:#166534}
+  .m-list.risk li{background:linear-gradient(135deg,#fef2f2,#fee2e2);border-left:3px solid var(--err)}
+  .m-list.risk li .ml-text b{color:#991b1b}
+
+  .fact-box{
+    background:linear-gradient(135deg,#fef3c7,#fde68a);
+    padding:13px 16px;border-radius:12px;
+    border-left:4px solid var(--gold-2);
+    font-size:13.5px;line-height:1.55;color:var(--gold-dark);font-weight:600;
+  }
+  .fact-box b{font-weight:900;color:var(--gold-dark)}
+
+  /* Toast */
+  #toast{
+    position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(100px);
+    background:linear-gradient(135deg,var(--green),#22c55e);color:#0a1628;
+    padding:14px 24px;border-radius:14px;font-weight:900;font-size:14px;
+    box-shadow:0 20px 50px rgba(74,222,128,.5);z-index:300;
+    opacity:0;transition:.4s;pointer-events:none;max-width:90vw;text-align:center;
+  }
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  .promo-line{
+    margin-top:26px;font-size:12px;color:rgba(255,255,255,.55);
+    text-align:center;line-height:1.65;padding:16px;
+    border-top:1px solid rgba(255,255,255,.08);
+  }
+  .promo-line b{color:var(--green-light);font-weight:900}
+  .promo-line a{color:var(--gold);font-weight:700;text-decoration:none;
+    border-bottom:1px dashed currentColor}
+
+  @media(max-width:600px){
+    .wrap{padding:16px 12px 80px}
+    .card{padding:22px 18px;border-radius:20px}
+    .question-emoji{font-size:44px}
+    .option-btn{padding:14px 14px;font-size:14px;gap:11px}
+    .option-btn .ob-letter{width:32px;height:32px;font-size:14px}
+    .intro-hero .ih-emoji{font-size:64px}
+    .result-hero .rh-medal{font-size:64px}
+    .top-item{padding:12px;gap:10px;flex-wrap:wrap}
+    .top-item .ti-detail{width:100%;margin-top:6px}
+    .top-item .ti-medal{font-size:22px;width:30px}
+    .start-btn{font-size:16px;padding:16px 20px}
+    .brand-logo{width:38px;height:38px;font-size:18px}
+    .brand-text b{font-size:13.5px}
+    .modal-head{padding:20px 18px 16px}
+    .modal-head h2{font-size:17px}
+    .mh-emoji{font-size:40px}
+    .modal-body{padding:16px 18px 20px}
+    .career-step{min-width:95px}
+    .career-step .cs-num{width:34px;height:34px;font-size:13px}
+    .career-step .cs-title{font-size:10.5px}
+    .salary-row{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="glow g1"></div>
+<div class="glow g2"></div>
+<div class="glow g3"></div>
+<div id="bgFX" aria-hidden="true"></div>
+<div id="fx"></div>
+<div id="toast"></div>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="brand-logo">🧭</div>
+      <div class="brand-text">
+        <b>Мягкая математика</b>
+        <span>Тест · выбор профессии</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="main"></main>
+
+  <div class="promo-line">
+    <b>Мягкая математика</b> · проект развития математических способностей ·
+    <a href="https://vk.com/smartskillsmaria" target="_blank" rel="noopener">группа ВК</a> ·
+    <a href="https://vk.com/im/convo/-229273902?entrypoint=community_page&amp;tab=all" target="_blank" rel="noopener">написать Марии Абрамовой</a>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-head" id="modalHead">
+      <button class="modal-close" id="modalClose" type="button">✕</button>
+      <div class="mh-emoji" id="mhEmoji">🌾</div>
+      <h2 id="mhTitle">Профессия</h2>
+      <div class="mh-cat" id="mhCat">Категория</div>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ==================== ВОПРОСЫ ==================== */
+const QUESTIONS = [
+  {
+    emoji: '🌍',
+    q: 'Где тебе было бы приятнее работать?',
+    options: [
+      {text: 'На поле, среди растений', tags:['plant']},
+      {text: 'На ферме, рядом с животными', tags:['animal']},
+      {text: 'В лесу, среди деревьев', tags:['forest']},
+      {text: 'На воде или у воды', tags:['water']},
+      {text: 'Под землёй, в шахте', tags:['ground']}
+    ]
+  },
+  {
+    emoji: '💡',
+    q: 'Что тебе интереснее всего делать?',
+    options: [
+      {text: 'Выращивать что-то новое', tags:['plant','science']},
+      {text: 'Ухаживать за живыми существами', tags:['animal','meaning']},
+      {text: 'Исследовать недра земли', tags:['ground','science']},
+      {text: 'Ловить рыбу и быть на воде', tags:['water','risk']},
+      {text: 'Работать с деревом', tags:['forest','hands']}
+    ]
+  },
+  {
+    emoji: '🛠',
+    q: 'Какая работа тебе ближе?',
+    options: [
+      {text: 'Физическая, руками', tags:['hands']},
+      {text: 'С наукой и расчётами', tags:['science']},
+      {text: 'С животными и растениями', tags:['animal','plant']},
+      {text: 'С техникой и механизмами', tags:['hands','ground']},
+      {text: 'С защитой природы', tags:['meaning']}
+    ]
+  },
+  {
+    emoji: '👥',
+    q: 'Как тебе комфортнее работать?',
+    options: [
+      {text: 'Сам по себе, в одиночку', tags:['solo']},
+      {text: 'В небольшой команде', tags:['team']},
+      {text: 'В большой команде', tags:['team']},
+      {text: 'С одним партнёром', tags:['team','solo']}
+    ]
+  },
+  {
+    emoji: '⚡',
+    q: 'Как ты относишься к риску?',
+    options: [
+      {text: 'Люблю стабильность и предсказуемость', tags:['stable']},
+      {text: 'Немного приключений — хорошо', tags:['stable','risk']},
+      {text: 'Обожаю риск и адреналин', tags:['risk']},
+      {text: 'Мне всё равно', tags:[]}
+    ]
+  },
+  {
+    emoji: '🌟',
+    q: 'Что из этого тебе ближе всего?',
+    options: [
+      {text: 'Посадить дерево и ухаживать за ним', tags:['plant','meaning']},
+      {text: 'Покормить телёнка или ягнёнка', tags:['animal']},
+      {text: 'Найти красивый минерал или камень', tags:['ground','science']},
+      {text: 'Связать прочную сеть для рыбы', tags:['water','hands']},
+      {text: 'Помочь животному, если оно заболело', tags:['animal','science']}
+    ]
+  },
+  {
+    emoji: '🎯',
+    q: 'Что тебя мотивирует?',
+    options: [
+      {text: 'Хорошая зарплата', tags:['stable']},
+      {text: 'Помогать природе и людям', tags:['meaning']},
+      {text: 'Создать своё дело', tags:['business']},
+      {text: 'Научное открытие', tags:['science']},
+      {text: 'Работа с животными', tags:['animal']}
+    ]
+  },
+  {
+    emoji: '🌿',
+    q: 'Чем бы ты занялся в выходной?',
+    options: [
+      {text: 'Погулял бы в лесу', tags:['forest','meaning']},
+      {text: 'Съездил бы на ферму', tags:['animal','plant']},
+      {text: 'Сходил бы в пещеры или горы', tags:['ground','risk']},
+      {text: 'Порыбачил бы на озере', tags:['water']},
+      {text: 'Почитал бы о биологии', tags:['animal','science']}
+    ]
+  },
+  {
+    emoji: '💪',
+    q: 'Что у тебя лучше всего получается?',
+    options: [
+      {text: 'Я сильный и не боюсь тяжёлой работы', tags:['hands']},
+      {text: 'Я наблюдательный и люблю анализировать', tags:['science']},
+      {text: 'Я терпеливый и заботливый', tags:['animal','meaning']},
+      {text: 'Я не боюсь опасностей', tags:['risk']},
+      {text: 'Я люблю всё организовывать', tags:['business','stable']}
+    ]
+  },
+  {
+    emoji: '🚀',
+    q: 'Какая у тебя мечта?',
+    options: [
+      {text: 'Вырастить свой сад', tags:['plant','meaning']},
+      {text: 'Стать врачом для животных', tags:['animal','science']},
+      {text: 'Найти редкий алмаз', tags:['ground','risk']},
+      {text: 'Стать капитаном корабля', tags:['water','risk']},
+      {text: 'Открыть свою пасеку', tags:['animal','business']}
+    ]
+  }
+];
+
+/* ==================== КАТЕГОРИИ ==================== */
+const CATEGORIES = {
+  plant:    {emoji:'🌱', name:'Растениеводство', gradient:'linear-gradient(135deg,#4ade80,#16a34a)', cls:'cat-plant'},
+  livestock:{emoji:'🐄', name:'Животноводство',  gradient:'linear-gradient(135deg,#f59e0b,#b45309)', cls:'cat-livestock'},
+  forest:   {emoji:'🌲', name:'Лес',             gradient:'linear-gradient(135deg,#166534,#14532d)', cls:'cat-forest'},
+  fish:     {emoji:'🐟', name:'Рыба',            gradient:'linear-gradient(135deg,#38bdf8,#0369a1)', cls:'cat-fish'},
+  mining:   {emoji:'⛏', name:'Добыча',          gradient:'linear-gradient(135deg,#78716c,#292524)', cls:'cat-mining'}
+};
+
+/* ==================== ПРОФЕССИИ ==================== */
+const PROFESSIONS = {
+  agronomist: {
+    name:'Агроном', emoji:'🌾', cat:'plant',
+    tags:{plant:3, science:2, solo:1},
+    why:'Ты любишь растения, готов анализировать и работать самостоятельно — идеальный набор для агронома. Ты умеешь планировать и видеть результат своего труда.',
+    desc:'Агроном — «мозг» поля. Он знает, какие культуры сеять, когда удобрять, как защищать от болезней и вредителей. Он планирует сезон так, чтобы получить максимум урожая.',
+    career:[{title:'Помощник агронома',years:'0–1 год'},{title:'Агроном',years:'1–3 года'},{title:'Старший агроном',years:'3–7 лет'},{title:'Главный агроном',years:'7+ лет'},{title:'Директор агрохолдинга',years:'10+ лет'}],
+    salary:{start:'40 000 ₽',mid:'80 000 ₽',senior:'150 000+ ₽'},
+    features:[{icon:'🌍',text:'<b>Работа на земле</b> — много времени на свежем воздухе, в полях и на фермах'},{icon:'🔬',text:'<b>Наука и практика</b> — нужно знать биологию, химию, почвоведение и технику'},{icon:'📅',text:'<b>Сезонность</b> — весной и летом горячая пора, зимой — планирование'}],
+    opportunities:[{icon:'📈',text:'<b>Быстрый рост</b> — при хороших результатах можно стать главным агрономом за 5–7 лет'},{icon:'🌱',text:'<b>Своё дело</b> — можно открыть фермерское хозяйство или консультировать других'},{icon:'🌍',text:'<b>Востребованность</b> — агрономы нужны везде, где есть сельское хозяйство'}],
+    risks:[{icon:'⚠️',text:'<b>Зависимость от погоды</b> — засуха или заморозки могут погубить урожай'},{icon:'⏰',text:'<b>Сезонные перегрузки</b> — в посевную и уборочную работают почти без выходных'},{icon:'💸',text:'<b>Ответственность за деньги</b> — ошибка в планировании может стоить ферме миллионы'}],
+    fact:'Один гектар пшеницы может дать <b>до 10 тонн зерна</b> — если агроном всё правильно спланирует.'
+  },
+  farmer: {
+    name:'Фермер', emoji:'🚜', cat:'plant',
+    tags:{plant:2, business:3, hands:2},
+    why:'Ты не боишься тяжёлой работы и хочешь создать своё дело. Фермер — это и работа руками, и предпринимательство, и свобода.',
+    desc:'Фермер — это предприниматель на земле. Он не только выращивает урожай, но и управляет хозяйством: нанимает людей, покупает технику, продаёт продукцию. Это и работа руками, и бизнес.',
+    career:[{title:'Работник фермы',years:'0–2 года'},{title:'Бригадир',years:'2–4 года'},{title:'Фермер',years:'4+ лет'},{title:'Глава хозяйства',years:'7+ лет'},{title:'Владелец агробизнеса',years:'10+ лет'}],
+    salary:{start:'30 000 ₽',mid:'100 000 ₽',senior:'300 000+ ₽'},
+    features:[{icon:'👨‍🌾',text:'<b>Свобода и ответственность</b> — сам решаешь, что и как делать'},{icon:'💼',text:'<b>Бизнес-навыки</b> — нужно считать бюджет, продавать, договариваться'},{icon:'🌅',text:'<b>Работа с землёй</b> — ранние подъёмы, физический труд, свежий воздух'}],
+    opportunities:[{icon:'💰',text:'<b>Свой доход</b> — можно хорошо зарабатывать, если хозяйство прибыльное'},{icon:'🏆',text:'<b>Гранты и поддержка</b> — государство даёт субсидии начинающим фермерам'},{icon:'🌍',text:'<b>Свобода и смысл</b> — делаешь реальный продукт, который нужен людям'}],
+    risks:[{icon:'🌪',text:'<b>Природные риски</b> — погода, вредители, болезни растений и животных'},{icon:'💸',text:'<b>Большие вложения</b> — техника, семена, топливо стоят дорого'},{icon:'📉',text:'<b>Колебания цен</b> — урожай может быть хорошим, а цены — низкими'}],
+    fact:'В России <b>более 150 000 фермерских хозяйств</b>. Многие начинали с одного гектара земли и гранта от государства.'
+  },
+  zootechnician: {
+    name:'Зоотехник', emoji:'🐄', cat:'livestock',
+    tags:{animal:3, science:2, stable:1},
+    why:'Ты любишь животных и не боишься цифр. Зоотехник — это наука о животных: рацион, здоровье, разведение — всё в цифрах и результатах.',
+    desc:'Зоотехник — «агроном для животных». Он планирует рацион коров, свиней или птицы, следит за привесами, организует разведение. От него зависит, сколько молока даст корова или как быстро вырастет поросёнок.',
+    career:[{title:'Помощник зоотехника',years:'0–1 год'},{title:'Зоотехник',years:'1–3 года'},{title:'Старший зоотехник',years:'3–7 лет'},{title:'Главный зоотехник',years:'7+ лет'},{title:'Руководитель фермы',years:'10+ лет'}],
+    salary:{start:'35 000 ₽',mid:'70 000 ₽',senior:'130 000+ ₽'},
+    features:[{icon:'🐄',text:'<b>Работа с животными</b> — нужно любить и понимать их поведение'},{icon:'📊',text:'<b>Цифры и расчёты</b> — рацион, привесы, надои — всё в цифрах'},{icon:'🏭',text:'<b>Современные технологии</b> — на больших фермах работают роботы и датчики'}],
+    opportunities:[{icon:'📈',text:'<b>Востребованность</b> — крупные фермы всегда ищут опытных зоотехников'},{icon:'🌍',text:'<b>Профессия с будущим</b> — растёт спрос на «умное» животноводство'},{icon:'🎯',text:'<b>Реальный результат</b> — видно, как твоя работа влияет на надои и привесы'}],
+    risks:[{icon:'🦠',text:'<b>Болезни животных</b> — вспышки могут уничтожить целое стадо'},{icon:'⏰',text:'<b>Ранние подъёмы</b> — животные требуют ухода каждый день, без выходных'},{icon:'🌡',text:'<b>Физические условия</b> — работа на ферме — это запахи, шум, тяжёлый труд'}],
+    fact:'Хороший зоотехник может увеличить надои молока на <b>20–30%</b> только за счёт правильного рациона.'
+  },
+  veterinarian: {
+    name:'Ветеринар', emoji:'🩺', cat:'livestock',
+    tags:{animal:3, science:2, meaning:2},
+    why:'Ты хочешь помогать живым существам и не боишься медицины. Ветеринар — это врач, который лечит тех, кто не может сказать, где болит.',
+    desc:'Ветеринар — врач для животных. Он может работать на ферме, в клинике, в зоопарке или на производстве. Лечит болезни, делает прививки, помогает при родах и следит за здоровьем стада.',
+    career:[{title:'Ассистент ветеринара',years:'0–2 года'},{title:'Ветеринарный врач',years:'2–5 лет'},{title:'Ведущий ветеринар',years:'5–10 лет'},{title:'Заведующий клиникой',years:'10+ лет'},{title:'Руководитель ветслужбы',years:'15+ лет'}],
+    salary:{start:'40 000 ₽',mid:'80 000 ₽',senior:'150 000+ ₽'},
+    features:[{icon:'🐾',text:'<b>Работа с животными</b> — при этом животные не говорят, где болит'},{icon:'📚',text:'<b>Много учёбы</b> — 5–6 лет вуза + постоянное повышение квалификации'},{icon:'🌍',text:'<b>Выбор места работы</b> — ферма, клиника, зоопарк, лаборатория, производство'}],
+    opportunities:[{icon:'🏆',text:'<b>Высокий спрос</b> — хорошие ветеринары нужны везде'},{icon:'💼',text:'<b>Своя клиника</b> — можно открыть частную практику'},{icon:'🌍',text:'<b>Эмоциональная отдача</b> — видишь, как спасённое животное возвращается к жизни'}],
+    risks:[{icon:'😢',text:'<b>Эмоциональная нагрузка</b> — не всех животных удаётся спасти'},{icon:'🦠',text:'<b>Риск для здоровья</b> — некоторые болезни животных передаются людям'},{icon:'💉',text:'<b>Физически тяжело</b> — операции, ночные смены, крупные животные'}],
+    fact:'Ветеринары — единственные врачи, которые лечат <b>больше 10 видов животных</b>: от хомяка до слона.'
+  },
+  beekeeper: {
+    name:'Пасечник', emoji:'🐝', cat:'livestock',
+    tags:{animal:2, business:2, solo:2, stable:1},
+    why:'Ты любишь природу, не боишься пчёл и готов работать на себя. Пасека — это небольшой бизнес, где всё зависит от тебя и твоих пчёл.',
+    desc:'Пасечник заботится о пчёлах: следит за ульями, перевозит их на цветущие луга, собирает мёд. Это редкая профессия, которая сочетает работу с природой, предпринимательство и немного романтики.',
+    career:[{title:'Помощник пасечника',years:'0–1 год'},{title:'Пасечник',years:'1–3 года'},{title:'Опытный пасечник',years:'3–10 лет'},{title:'Владелец пасеки',years:'10+ лет'},{title:'Промышленный пчеловод',years:'15+ лет'}],
+    salary:{start:'20 000 ₽',mid:'60 000 ₽',senior:'200 000+ ₽'},
+    features:[{icon:'🐝',text:'<b>Работа с пчёлами</b> — нужно знать их поведение и уметь обращаться'},{icon:'🌻',text:'<b>Сезонность</b> — активная работа весной и летом, отдых зимой'},{icon:'🏡',text:'<b>Малый бизнес</b> — часто это семейное дело, а не работа «на дядю»'}],
+    opportunities:[{icon:'🍯',text:'<b>Свой продукт</b> — мёд, воск, пыльца, прополис — всё идёт в продажу'},{icon:'🌍',text:'<b>Малые вложения</b> — начать можно с 2–3 ульев на даче'},{icon:'📈',text:'<b>Растущий спрос</b> — натуральный мёд всегда востребован'}],
+    risks:[{icon:'🐝',text:'<b>Аллергия и укусы</b> — работа с пчёлами требует осторожности'},{icon:'🌡',text:'<b>Зависимость от природы</b> — дождь, холод, мало цветов = мало мёда'},{icon:'🦠',text:'<b>Болезни пчёл</b> — могут уничтожить всю пасеку за сезон'}],
+    fact:'Одна пчела за жизнь производит всего <b>1/12 чайной ложки мёда</b>. А чтобы собрать 1 кг, нужно около 4 миллионов цветов.'
+  },
+  forester: {
+    name:'Лесник', emoji:'🌲', cat:'forest',
+    tags:{forest:3, meaning:2, solo:2},
+    why:'Ты любишь лес, ценишь природу и готов работать самостоятельно. Лесник — хозяин леса: охраняет, заботится, защищает.',
+    desc:'Лесник — «хозяин леса». Он охраняет деревья от незаконной вырубки и пожаров, следит за здоровьем леса, организует посадки новых деревьев. Работает на природе и в тесной связи с государством.',
+    career:[{title:'Помощник лесника',years:'0–1 год'},{title:'Лесник',years:'1–3 года'},{title:'Старший лесник',years:'3–7 лет'},{title:'Лесничий',years:'7+ лет'},{title:'Начальник лесхоза',years:'15+ лет'}],
+    salary:{start:'25 000 ₽',mid:'50 000 ₽',senior:'90 000+ ₽'},
+    features:[{icon:'🌲',text:'<b>Работа на природе</b> — большую часть времени в лесу, пешком или на квадроцикле'},{icon:'🛡',text:'<b>Государственная служба</b> — лесник часто работает в лесничестве'},{icon:'🚁',text:'<b>Современные технологии</b> — дроны, спутниковые снимки, датчики пожара'}],
+    opportunities:[{icon:'🌱',text:'<b>Смысл работы</b> — реально сохраняешь лес для будущих поколений'},{icon:'📈',text:'<b>Стабильность</b> — государственная служба с гарантированной зарплатой'},{icon:'🌍',text:'<b>Профессия с миссией</b> — экология становится всё важнее в мире'}],
+    risks:[{icon:'🔥',text:'<b>Пожары</b> — в жаркое лето лесник работает на пределе возможностей'},{icon:'🐻',text:'<b>Дикие животные</b> — в лесу можно встретить медведя, волка или лося'},{icon:'💰',text:'<b>Невысокие зарплаты</b> — государственная служба платит скромно'}],
+    fact:'Леса России — это <b>около 20% всех лесов мира</b>. Один лесник может отвечать за территорию в сотни гектаров.'
+  },
+  lumberjack: {
+    name:'Вальщик леса', emoji:'🪓', cat:'forest',
+    tags:{forest:3, hands:3, risk:1},
+    why:'Ты сильный, любишь лес и не боишься физической работы. Вальщик — профессия для тех, кто умеет точно и смело работать руками.',
+    desc:'Вальщик — это не просто «человек с топором». Это специалист, который точно рассчитывает, куда упадёт дерево, чтобы не повредить технику и не травмировать людей. Современные вальщики работают с бензопилами или харвестерами.',
+    career:[{title:'Помощник вальщика',years:'0–1 год'},{title:'Вальщик',years:'1–3 года'},{title:'Опытный вальщик',years:'3–7 лет'},{title:'Бригадир лесозаготовки',years:'7+ лет'},{title:'Мастер участка',years:'10+ лет'}],
+    salary:{start:'30 000 ₽',mid:'70 000 ₽',senior:'120 000+ ₽'},
+    features:[{icon:'🪓',text:'<b>Физический труд</b> — тяжёлая работа, требующая силы и выносливости'},{icon:'🎯',text:'<b>Точность</b> — ошибка может стоить травмы или испорченного дерева'},{icon:'🚜',text:'<b>Техника</b> — современные вальщики работают с харвестерами в кабине'}],
+    opportunities:[{icon:'💰',text:'<b>Хороший доход</b> — опытный вальщик зарабатывает выше среднего по региону'},{icon:'🚜',text:'<b>Освоение техники</b> — можно перейти на работу оператором харвестера'},{icon:'📈',text:'<b>Востребованность</b> — лесозаготовка нужна везде, где есть лес'}],
+    risks:[{icon:'⚠️',text:'<b>Травмы</b> — это одна из самых опасных профессий в первичном секторе'},{icon:'🌨',text:'<b>Погодные условия</b> — работать приходится в любую погоду, часто в холоде'},{icon:'🏕',text:'<b>Удалённость</b> — вахты в лесу, жизнь вдали от дома'}],
+    fact:'Современный харвестер с одним оператором заменяет <b>целую бригаду лесорубов</b> и валит дерево за 30 секунд.'
+  },
+  fisherman: {
+    name:'Рыбак', emoji:'🎣', cat:'fish',
+    tags:{water:3, risk:2, team:2, hands:1},
+    why:'Ты любишь воду, приключения и командную работу. Рыбак — это романтика моря, дружный экипаж и настоящий адреналин.',
+    desc:'Рыбак — это морской работник. Он ловит рыбу с судна, ставит сети, следит за снастями. Работа тяжёлая, часто вдали от берега, но зато с хорошим заработком и романтикой моря.',
+    career:[{title:'Матрос',years:'0–1 год'},{title:'Старший матрос',years:'1–3 года'},{title:'Боцман',years:'3–7 лет'},{title:'Помощник капитана',years:'7+ лет'},{title:'Капитан судна',years:'12+ лет'}],
+    salary:{start:'50 000 ₽',mid:'120 000 ₽',senior:'300 000+ ₽'},
+    features:[{icon:'🌊',text:'<b>Работа в море</b> — месяцами вдали от дома, в замкнутом коллективе'},{icon:'💪',text:'<b>Тяжёлый труд</b> — сети, рыба, холод, качка — это физическая нагрузка'},{icon:'🏆',text:'<b>Хороший заработок</b> — рыбак зарабатывает выше среднего по стране'}],
+    opportunities:[{icon:'📈',text:'<b>Карьерный рост</b> — от матроса до капитана за 12–15 лет'},{icon:'💰',text:'<b>Высокие зарплаты</b> — особенно на траулерах в северных морях'},{icon:'🌍',text:'<b>Путешествия</b> — можно побывать в разных морях и странах'}],
+    risks:[{icon:'⛈',text:'<b>Штормы и аварии</b> — море опасно, несмотря на современную технику'},{icon:'🏠',text:'<b>Долгие разлуки</b> — месяцы в море — тяжело для семьи'},{icon:'🌡',text:'<b>Суровые условия</b> — холод, качка, тяжёлые смены по 12 часов'}],
+    fact:'Крупнейший в мире рыболовный траулер — это <b>плавучий завод</b>: он может перерабатывать до 500 тонн рыбы в сутки.'
+  },
+  fishfarmer: {
+    name:'Рыбовод', emoji:'🐠', cat:'fish',
+    tags:{water:2, animal:2, science:2},
+    why:'Тебя интересует вода и живые существа, и ты готов разбираться в науке. Рыбовод — это фермер для рыбы: забота, кормление, контроль.',
+    desc:'Рыбовод — это «фермер для рыбы». Он разводит рыбу в прудах, садках или бассейнах, следит за её здоровьем и кормлением. Рыбоводство растёт быстрее, чем обычный промысел, потому что рыба в океане не бесконечна.',
+    career:[{title:'Рабочий рыбоводной фермы',years:'0–1 год'},{title:'Рыбовод',years:'1–3 года'},{title:'Старший рыбовод',years:'3–7 лет'},{title:'Главный рыбовод',years:'7+ лет'},{title:'Управляющий хозяйством',years:'12+ лет'}],
+    salary:{start:'30 000 ₽',mid:'60 000 ₽',senior:'110 000+ ₽'},
+    features:[{icon:'🐟',text:'<b>Работа с живой рыбой</b> — нужно понимать её биологию и поведение'},{icon:'🌊',text:'<b>Вода и техника</b> — насосы, бассейны, контроль температуры и кислорода'},{icon:'📈',text:'<b>Растущая отрасль</b> — аквакультура развивается быстрее традиционного рыболовства'}],
+    opportunities:[{icon:'🌍',text:'<b>Будущее отрасли</b> — мировая потребность в рыбе растёт'},{icon:'💼',text:'<b>Своё дело</b> — можно открыть небольшую рыбоводную ферму'},{icon:'🍽',text:'<b>Стабильный спрос</b> — свежая рыба всегда нужна ресторанам и магазинам'}],
+    risks:[{icon:'🦠',text:'<b>Болезни рыбы</b> — могут погубить целое стадо за несколько дней'},{icon:'💸',text:'<b>Вложения</b> — оборудование и корм стоят дорого'},{icon:'⚡',text:'<b>Аварии оборудования</b> — если отключат кислород, рыба погибнет за часы'}],
+    fact:'Более <b>50% рыбы, которую едят в мире</b>, уже выращено на фермах, а не поймано в море.'
+  },
+  miner: {
+    name:'Шахтёр', emoji:'⛏', cat:'mining',
+    tags:{ground:3, hands:2, risk:2, stable:1},
+    why:'Ты не боишься глубины и физической работы. Шахтёр — профессия для сильных, которые добывают то, что даёт планета.',
+    desc:'Шахтёр спускается под землю, чтобы добыть то, что даёт природа: уголь, руду, золото, алмазы. Это одна из самых тяжёлых и опасных, но и самых оплачиваемых профессий первичного сектора.',
+    career:[{title:'Помощник шахтёра',years:'0–1 год'},{title:'Шахтёр',years:'1–3 года'},{title:'Машинист комбайна',years:'3–7 лет'},{title:'Бригадир',years:'7+ лет'},{title:'Начальник участка',years:'12+ лет'}],
+    salary:{start:'60 000 ₽',mid:'120 000 ₽',senior:'250 000+ ₽'},
+    features:[{icon:'⛏',text:'<b>Работа под землёй</b> — темно, тесно, пыльно, но с современной техникой'},{icon:'⚠️',text:'<b>Опасность</b> — обвалы, газы, техника — риск всегда есть'},{icon:'💰',text:'<b>Высокие зарплаты</b> — за риск и тяжесть платят выше среднего'}],
+    opportunities:[{icon:'💰',text:'<b>Хороший доход</b> — шахтёр зарабатывает больше многих офисных сотрудников'},{icon:'📈',text:'<b>Карьерный рост</b> — от рабочего до начальника участка'},{icon:'🏆',text:'<b>Льготы</b> — ранняя пенсия, дополнительные отпуска, компенсации'}],
+    risks:[{icon:'⚠️',text:'<b>Опасность для жизни</b> — аварии могут привести к травмам и гибели людей'},{icon:'🫁',text:'<b>Здоровье</b> — пыль, шум, вибрация — риск профессиональных болезней'},{icon:'🏠',text:'<b>Вахты</b> — часто работа вахтовым методом, вдали от дома'}],
+    fact:'Самые глубокие шахты в мире уходят на <b>4 километра</b> под землю — это глубже, чем дно океана в некоторых местах.'
+  },
+  oiler: {
+    name:'Нефтяник', emoji:'🛢', cat:'mining',
+    tags:{ground:3, risk:2, stable:2, team:2},
+    why:'Ты не боишься суровых условий и хочешь работать в большой команде. Нефтяник — это вахта, техника и стабильный высокий доход.',
+    desc:'Нефтяник работает на буровой — добывает нефть и газ из-под земли. Это тяжёлая работа вахтовым методом, но с очень высокой зарплатой. Именно нефтяники дают миру бензин, пластик, асфальт.',
+    career:[{title:'Помощник бурильщика',years:'0–1 год'},{title:'Бурильщик',years:'1–3 года'},{title:'Старший бурильщик',years:'3–7 лет'},{title:'Мастер по добыче',years:'7+ лет'},{title:'Начальник участка',years:'12+ лет'}],
+    salary:{start:'70 000 ₽',mid:'150 000 ₽',senior:'300 000+ ₽'},
+    features:[{icon:'🛢',text:'<b>Вахтовый метод</b> — работа на месторождениях месяцами, потом длинный отдых'},{icon:'🌡',text:'<b>Суровые условия</b> — Сибирь, север, мороз до –50°C'},{icon:'💰',text:'<b>Очень высокая зарплата</b> — одна из самых оплачиваемых профессий в России'}],
+    opportunities:[{icon:'💰',text:'<b>Высокий доход</b> — нефтяник зарабатывает в 2–3 раза больше среднего'},{icon:'📈',text:'<b>Карьера</b> — можно вырасти до начальника участка за 10–12 лет'},{icon:'🌍',text:'<b>Крупные компании</b> — работа в больших корпорациях с соцпакетом'}],
+    risks:[{icon:'🏠',text:'<b>Долгие разлуки с семьёй</b> — вахта по 30–60 дней'},{icon:'⚠️',text:'<b>Опасная работа</b> — нефть и газ взрывоопасны'},{icon:'🌡',text:'<b>Тяжёлый климат</b> — мороз, ветер, полярная ночь'}],
+    fact:'Из одной тонны нефти можно сделать <b>около 700 кг разных продуктов</b>: бензин, керосин, пластик, асфальт.'
+  },
+  geologist: {
+    name:'Геолог', emoji:'💎', cat:'mining',
+    tags:{ground:2, science:3, risk:1, solo:1},
+    why:'Ты любознательный, любишь науку и не боишься экспедиций. Геолог — это детектив недр, который ищет сокровища под землёй.',
+    desc:'Геолог — «детектив недр». Он изучает породы, берёт пробы, анализирует данные и определяет, где может быть нефть, золото или алмазы. Именно геологи находят месторождения, которые потом разрабатывают другие.',
+    career:[{title:'Техник-геолог',years:'0–2 года'},{title:'Геолог',years:'2–5 лет'},{title:'Ведущий геолог',years:'5–10 лет'},{title:'Главный геолог',years:'10+ лет'},{title:'Директор по разведке',years:'15+ лет'}],
+    salary:{start:'50 000 ₽',mid:'120 000 ₽',senior:'250 000+ ₽'},
+    features:[{icon:'🗺',text:'<b>Экспедиции</b> — работа в тайге, горах, пустыне, часто месяцами'},{icon:'🔬',text:'<b>Наука</b> — геология, химия, физика, работа с приборами'},{icon:'🌍',text:'<b>Компьютерные технологии</b> — современные геологи работают с 3D-моделями недр'}],
+    opportunities:[{icon:'💎',text:'<b>Открытия</b> — каждый геолог мечтает найти новое крупное месторождение'},{icon:'📈',text:'<b>Высокий доход</b> — опытные геологи зарабатывают очень хорошо'},{icon:'🌍',text:'<b>Путешествия</b> — работа в разных регионах страны и мира'}],
+    risks:[{icon:'🐻',text:'<b>Дикая природа</b> — медведи, комары, болота, риск заблудиться'},{icon:'🏕',text:'<b>Полевые условия</b> — палатки, отсутствие связи, тяжёлый физический труд'},{icon:'📉',text:'<b>Нестабильность</b> — если цены на сырьё падают, разведка сокращается'}],
+    fact:'Крупнейшее в мире месторождение газа — <b>Южный Парс</b> в Катаре — нашёл геолог, а запасов там хватит на 200 лет.'
+  },
+  ecologist: {
+    name:'Эколог', emoji:'🌍', cat:'mining',
+    tags:{meaning:3, science:2, plant:2, animal:1},
+    why:'Ты хочешь защищать природу и готов разбираться в науке. Эколог — это баланс между бизнесом и сохранением планеты.',
+    desc:'Эколог в первичном секторе — «защитник природы». Он проверяет, чтобы заводы и шахты не загрязняли воду и воздух, следит за восстановлением земель после добычи, разрабатывает экологические программы.',
+    career:[{title:'Техник-эколог',years:'0–2 года'},{title:'Эколог',years:'2–5 лет'},{title:'Ведущий эколог',years:'5–10 лет'},{title:'Главный эколог',years:'10+ лет'},{title:'Директор по устойчивому развитию',years:'15+ лет'}],
+    salary:{start:'45 000 ₽',mid:'90 000 ₽',senior:'180 000+ ₽'},
+    features:[{icon:'🌿',text:'<b>Работа с природой и наукой</b> — химия, биология, география, право'},{icon:'📋',text:'<b>Документы и проверки</b> — много бумажной работы и выездов на объекты'},{icon:'⚖️',text:'<b>Баланс интересов</b> — между бизнесом и сохранением природы'}],
+    opportunities:[{icon:'🌍',text:'<b>Растущее значение</b> — экология становится важнее в мире и в России'},{icon:'📈',text:'<b>Востребованность</b> — крупные компании обязаны иметь экологов'},{icon:'🏆',text:'<b>Профессия с миссией</b> — реально влияешь на сохранение планеты'}],
+    risks:[{icon:'⚖️',text:'<b>Конфликты</b> — иногда приходится спорить с бизнесом, который хочет сэкономить'},{icon:'💼',text:'<b>Бюрократия</b> — много отчётов, проверок, согласований'},{icon:'💰',text:'<b>Средний доход</b> — в некоторых регионах платят меньше, чем в добыче'}],
+    fact:'Один гектар восстановленного леса может поглотить <b>до 10 тонн CO₂ в год</b> — это как выхлоп 4 автомобилей.'
+  }
+};
+
+const TAG_INFO = {
+  plant:{emoji:'🌱', label:'Растения'},
+  animal:{emoji:'🐄', label:'Животные'},
+  forest:{emoji:'🌲', label:'Лес'},
+  water:{emoji:'🐟', label:'Вода'},
+  ground:{emoji:'⛏', label:'Недра'},
+  science:{emoji:'🔬', label:'Наука'},
+  hands:{emoji:'🛠', label:'Руки'},
+  risk:{emoji:'⚡', label:'Риск'},
+  stable:{emoji:'🏠', label:'Стабильность'},
+  business:{emoji:'💼', label:'Своё дело'},
+  team:{emoji:'👥', label:'Команда'},
+  solo:{emoji:'🧘', label:'Сам по себе'},
+  meaning:{emoji:'🌍', label:'Смысл'}
+};
+
+/* ==================== СОСТОЯНИЕ ==================== */
+let state = {
+  screen: 'intro',
+  currentQ: 0,
+  answers: [],
+  tags: {},
+  results: []
+};
+
+const $ = id => document.getElementById(id);
+const main = () => $('main');
+
+/* ==================== ФОН ==================== */
+(function initBG(){
+  const layer = document.getElementById('bgFX');
+  if(!layer) return;
+  try{
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      layer.style.display = 'none'; return;
+    }
+  }catch(e){}
+
+  const SYMBOLS = ['🌾','🌽','🌻','🌱','🍎','🌳','🌲','🌴','🐄','🐑','🐔','🐝','🐟','🐠','🦌','⛏','🛢','💎','⛽','🪨','💧','🌡','☀️','🌧'];
+  const COLORS = ['#4ade80','#86efac','#f5b942','#fbbf24','#38bdf8','#ffffff','#a16207'];
+  const COUNT = window.innerWidth < 600 ? 16 : 28;
+  const frag = document.createDocumentFragment();
+  for(let i = 0; i < COUNT; i++){
+    const wrap = document.createElement('span');
+    wrap.className = 'bg-item';
+    wrap.setAttribute('aria-hidden','true');
+    wrap.textContent = SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)];
+    wrap.style.fontSize = (18 + Math.random()*30).toFixed(1) + 'px';
+    wrap.style.left = (Math.random()*100).toFixed(2) + 'vw';
+    wrap.style.color = COLORS[Math.floor(Math.random()*COLORS.length)];
+    wrap.style.setProperty('--op', (0.06 + Math.random()*0.10).toFixed(3));
+    wrap.style.setProperty('--dx', (Math.random()*200 - 100).toFixed(0) + 'px');
+    wrap.style.setProperty('--rot', (Math.random()*60 - 30).toFixed(0) + 'deg');
+    const dur = 40 + Math.random()*50;
+    wrap.style.animationDuration = dur.toFixed(1) + 's';
+    wrap.style.animationDelay = (-Math.random()*dur).toFixed(1) + 's';
+    frag.appendChild(wrap);
+  }
+  layer.appendChild(frag);
+})();
+
+/* ==================== ЗВУК ==================== */
+let AC = null;
+function beep(freq=880, dur=0.15, type='sine'){
+  try{
+    AC = AC || new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state === 'suspended') AC.resume();
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.connect(g); g.connect(AC.destination);
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.12, AC.currentTime + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime + dur);
+    o.start(); o.stop(AC.currentTime + dur + 0.02);
+  }catch(e){}
+}
+function soundClick(){ beep(660, 0.08); }
+function soundOpen(){ beep(880,0.12); beep(1100,0.1); setTimeout(()=>beep(1320,0.1), 80); }
+function soundSuccess(){ beep(880,0.1); setTimeout(()=>beep(1046,0.1), 90); setTimeout(()=>beep(1318,0.2), 180); }
+
+/* ==================== КОНФЕТТИ ==================== */
+function confetti(n = 30){
+  const emo = ['🌾','✨','🎉','🌟','💰','🏅','🌱','🍃','💎','⭐','🎊','🏆'];
+  const fx = $('fx');
+  for(let i = 0; i < n; i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.textContent = emo[Math.floor(Math.random()*emo.length)];
+    p.style.left = Math.random()*100 + 'vw';
+    p.style.top = '-30px';
+    p.style.animationDuration = (1.1+Math.random()*1.2) + 's';
+    p.style.fontSize = (16+Math.random()*18) + 'px';
+    fx.appendChild(p);
+    setTimeout(()=>p.remove(), 2500);
+  }
+}
+
+/* ==================== ИНТРО ==================== */
+function renderIntro(){
+  state = { screen:'intro', currentQ:0, answers:[], tags:{}, results:[] };
+  main().innerHTML = `
+    <section class="card">
+      <div class="intro-hero">
+        <div class="ih-emoji">🧭</div>
+        <h1>Какая профессия <span>первичного сектора</span> — твоя?</h1>
+        <p>Ответь на <b>10 коротких вопросов</b> — и узнаешь, какие профессии подходят тебе больше всего. В конце — <b>топ-3</b> специальности, <b>диаграмма всех 13</b> и подробное описание каждой.</p>
+      </div>
+
+      <div class="intro-stats">
+        <div class="stat-card">
+          <span class="sc-emoji">❓</span>
+          <div class="sc-num">10</div>
+          <div class="sc-label">вопросов</div>
+        </div>
+        <div class="stat-card">
+          <span class="sc-emoji">⏱</span>
+          <div class="sc-num">3–4</div>
+          <div class="sc-label">минуты</div>
+        </div>
+        <div class="stat-card">
+          <span class="sc-emoji">🌾</span>
+          <div class="sc-num">13</div>
+          <div class="sc-label">профессий</div>
+        </div>
+      </div>
+
+      <button class="start-btn" id="startBtn" type="button">
+        🚀 Начать тест
+      </button>
+    </section>
+  `;
+
+  $('startBtn').addEventListener('click', () => {
+    soundClick();
+    state.screen = 'question';
+    state.currentQ = 0;
+    renderQuestion();
+  });
+}
+
+/* ==================== ВОПРОС ==================== */
+function renderQuestion(){
+  const q = QUESTIONS[state.currentQ];
+  const progress = (state.currentQ / QUESTIONS.length) * 100;
+  const letters = ['А','Б','В','Г','Д','Е'];
+
+  main().innerHTML = `
+    <section class="card">
+      <div class="progress-row">
+        <span>Вопрос ${state.currentQ + 1} из ${QUESTIONS.length}</span>
+        <span class="pr-num">${Math.round(progress)}% пройдено</span>
+      </div>
+      <div class="progress-bar"><div style="width:${progress}%"></div></div>
+
+      <div class="question-emoji">${q.emoji}</div>
+      <h2 class="question-text">${q.q}</h2>
+
+      <div class="options" id="options">
+        ${q.options.map((opt, i) => `
+          <button class="option-btn" data-i="${i}" type="button">
+            <span class="ob-letter">${letters[i]}</span>
+            <span class="ob-text">${opt.text}</span>
+            <span class="ob-arrow">→</span>
+          </button>
+        `).join('')}
+      </div>
+
+      <div class="back-row">
+        <button class="back-btn" id="backBtn" type="button" ${state.currentQ === 0 ? 'disabled' : ''}>← Назад</button>
+        <span class="back-hint">Выбери один вариант</span>
+      </div>
+    </section>
+  `;
+
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', () => handleAnswer(+btn.dataset.i));
+  });
+
+  $('backBtn').addEventListener('click', () => {
+    if(state.currentQ > 0){
+      soundClick();
+      state.currentQ--;
+      if(state.answers[state.currentQ]){
+        const removed = state.answers[state.currentQ];
+        removed.tags.forEach(t => { state.tags[t] = (state.tags[t] || 0) - 1; });
+      }
+      state.answers = state.answers.slice(0, state.currentQ);
+      renderQuestion();
+    }
+  });
+}
+
+function handleAnswer(idx){
+  const q = QUESTIONS[state.currentQ];
+  const opt = q.options[idx];
+  soundClick();
+  state.answers[state.currentQ] = { idx, tags: opt.tags };
+  opt.tags.forEach(t => { state.tags[t] = (state.tags[t] || 0) + 1; });
+
+  if(state.currentQ < QUESTIONS.length - 1){
+    state.currentQ++;
+    renderQuestion();
+  } else {
+    state.screen = 'result';
+    renderResult();
+  }
+}
+
+/* ==================== РЕЗУЛЬТАТ ==================== */
+function calculateResults(){
+  return Object.entries(PROFESSIONS).map(([id, p]) => {
+    let score = 0;
+    for(const [tag, weight] of Object.entries(p.tags)){
+      score += (state.tags[tag] || 0) * weight;
+    }
+    return { id, ...p, score };
+  }).sort((a, b) => b.score - a.score);
+}
+
+function renderResult(){
+  const results = calculateResults();
+  const topScore = results[0].score || 1;
+  results.forEach(r => { r.percent = Math.round(r.score / topScore * 100); });
+  state.results = results;
+
+  const top1 = results[0], top2 = results[1], top3 = results[2];
+
+  const userTags = Object.entries(state.tags)
+    .filter(([_, v]) => v > 0)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4);
+
+  main().innerHTML = `
+    <section class="card">
+      <div class="result-hero">
+        <div class="rh-medal">🏆</div>
+        <div class="rh-tag">Твой топ-выбор</div>
+        <h2>${top1.name}</h2>
+        <div class="rh-prof">${top1.emoji} ${top1.name}</div>
+        <p class="rh-why">${top1.why}</p>
+      </div>
+
+      <div class="traits-row">
+        <div class="tr-title">💪 Твои главные сильные стороны:</div>
+        <div class="traits-chips">
+          ${userTags.map(([tag]) => `
+            <span class="trait-chip">${TAG_INFO[tag].emoji} ${TAG_INFO[tag].label}</span>
+          `).join('')}
+        </div>
+      </div>
+
+      <h3 style="font-size:16px;font-weight:900;color:var(--ink);margin:24px 0 12px">
+        🥇 Ещё две профессии, которые тебе подходят
+      </h3>
+
+      <div class="top-list">
+        ${[top1, top2, top3].map((p, i) => `
+          <div class="top-item ${i === 0 ? 'first' : ''}">
+            <div class="ti-medal">${['🥇','🥈','🥉'][i]}</div>
+            <div class="ti-body">
+              <div class="ti-name">${p.emoji} ${p.name}</div>
+              <div class="ti-cat">${CATEGORIES[p.cat].emoji} ${CATEGORIES[p.cat].name}</div>
+              <div class="ti-bar"><div style="width:${p.percent}%"></div></div>
+            </div>
+            <div class="ti-percent">${p.percent}%</div>
+            <button class="ti-detail" data-prof="${p.id}" type="button">Подробнее →</button>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="chart-section">
+        <div class="chart-title">📊 Совпадение по всем 13 профессиям</div>
+        <div class="chart-rows">
+          ${results.map((p, i) => `
+            <div class="chart-row ${i === 0 ? 'first' : ''} ${CATEGORIES[p.cat].cls}"
+                 data-prof="${p.id}">
+              <div class="cr-head">
+                <span class="cr-emoji">${p.emoji}</span>
+                <span class="cr-name">${p.name}</span>
+              </div>
+              <div class="cr-percent">${p.percent}%</div>
+              <div class="cr-bar-wrap">
+                <div class="cr-bar" style="width:${p.percent}%"></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn-secondary" id="retryBtn" type="button">↺ Пройти заново</button>
+        <button class="btn-primary" id="shareBtn" type="button">📋 Скопировать результат</button>
+      </div>
+    </section>
+  `;
+
+  // Клик на топ-карточки и на строки диаграммы
+  document.querySelectorAll('[data-prof]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      // если кликнули на кнопку — она тоже обрабатывается ниже, не дублируем
+      if(e.target.classList.contains('ti-detail')) return;
+      openProfessionModal(el.dataset.prof);
+    });
+  });
+  document.querySelectorAll('.ti-detail').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openProfessionModal(btn.dataset.prof);
+    });
+  });
+
+  confetti(40);
+  setTimeout(() => confetti(25), 400);
+  soundSuccess();
+
+  // Анимация полосок
+  setTimeout(() => {
+    document.querySelectorAll('.cr-bar').forEach(bar => {
+      const w = bar.style.width;
+      bar.style.width = '0';
+      setTimeout(() => { bar.style.width = w; }, 50);
+    });
+  }, 200);
+
+  $('retryBtn').addEventListener('click', () => { soundClick(); renderIntro(); });
+
+  $('shareBtn').addEventListener('click', () => {
+    const text = `Мой топ-3 профессии первичного сектора:\n🥇 ${top1.name} (${top1.percent}%)\n🥈 ${top2.name} (${top2.percent}%)\n🥉 ${top3.name} (${top3.percent}%)\n\nПрошёл(ла) тест в «Мягкой математике»`;
+    copyText(text).then(ok => showToast(ok ? '📋 Скопировано!' : 'Не удалось скопировать'));
+  });
+}
+
+/* ==================== МОДАЛКА ==================== */
+function openProfessionModal(id){
+  const p = PROFESSIONS[id];
+  if(!p) return;
+  const cat = CATEGORIES[p.cat];
+
+  const head = $('modalHead');
+  head.style.background = cat.gradient;
+  $('mhEmoji').textContent = p.emoji;
+  $('mhTitle').textContent = p.name;
+  $('mhCat').textContent = cat.emoji + ' ' + cat.name;
+
+  $('modalBody').innerHTML = `
+    <div class="m-section">
+      <h3 class="m-section-title icon-about">📖 Что это за профессия</h3>
+      <p class="m-desc">${p.desc}</p>
+    </div>
+
+    <div class="m-section">
+      <h3 class="m-section-title icon-track">🚀 Карьерный трек</h3>
+      <div class="career-track">
+        ${p.career.map((step, i) => `
+          <div class="career-step">
+            <div class="cs-num">${i + 1}</div>
+            <div class="cs-title">${step.title}</div>
+            <div class="cs-years">${step.years}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="salary-row">
+        <div class="salary-card">
+          <div class="sc-label">Старт</div>
+          <div class="sc-value">${p.salary.start}</div>
+          <div class="sc-sub">в начале пути</div>
+        </div>
+        <div class="salary-card">
+          <div class="sc-label">Специалист</div>
+          <div class="sc-value">${p.salary.mid}</div>
+          <div class="sc-sub">через 3–5 лет</div>
+        </div>
+        <div class="salary-card">
+          <div class="sc-label">Эксперт</div>
+          <div class="sc-value">${p.salary.senior}</div>
+          <div class="sc-sub">через 10+ лет</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="m-section">
+      <h3 class="m-section-title icon-feat">🎯 Особенности</h3>
+      <ul class="m-list feat">
+        ${p.features.map(f => `<li><span class="ml-icon">${f.icon}</span><span class="ml-text">${f.text}</span></li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="m-section">
+      <h3 class="m-section-title icon-opp">🌟 Возможности</h3>
+      <ul class="m-list opp">
+        ${p.opportunities.map(o => `<li><span class="ml-icon">${o.icon}</span><span class="ml-text">${o.text}</span></li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="m-section">
+      <h3 class="m-section-title icon-risk">⚠️ Риски</h3>
+      <ul class="m-list risk">
+        ${p.risks.map(r => `<li><span class="ml-icon">${r.icon}</span><span class="ml-text">${r.text}</span></li>`).join('')}
+      </ul>
+    </div>
+
+    <div class="m-section">
+      <h3 class="m-section-title icon-fact">💡 Интересный факт</h3>
+      <div class="fact-box">${p.fact}</div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-secondary" type="button" onclick="closeProfessionModal()">← К результату</button>
+    </div>
+  `;
+
+  $('modalOverlay').classList.add('open');
+  soundOpen();
+}
+
+function closeProfessionModal(){
+  $('modalOverlay').classList.remove('open');
+  soundClick();
+}
+
+$('modalClose').addEventListener('click', closeProfessionModal);
+$('modalOverlay').addEventListener('click', e => {
+  if(e.target === $('modalOverlay')) closeProfessionModal();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && $('modalOverlay').classList.contains('open')) closeProfessionModal();
+});
+
+function copyText(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    return navigator.clipboard.writeText(text).then(() => true).catch(() => fallbackCopy(text));
+  }
+  return Promise.resolve(fallbackCopy(text));
+}
+function fallbackCopy(text){
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  }catch(e){ return false; }
+}
+
+function showToast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._id);
+  t._id = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ==================== СТАРТ ==================== */
+renderIntro();
+</script>
+</body>
+</html>
